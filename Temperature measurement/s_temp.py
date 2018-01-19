@@ -2,7 +2,7 @@ import os
 import glob
 import time
 import sys
-import MySQLdb as mdb
+import urllib.parse
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -37,20 +37,14 @@ time.sleep(57)
 
 # Save the temperature to the MySQL database
 try:
-    pi_temp = read_temp()
-    con = mdb.connect('localhost',
-                      'pi_insert',
-                      'password',
-                      'measurements')
-    cur = con.cursor()
-    cur.execute("""INSERT INTO temperature(temperature) \
-                       VALUES(%s)""", (pi_temp))
-    con.commit()
-
-except mdb.Error:
-    con.rollback()
-    sys.exit(1)
-
+    pi_temp = str(read_temp())
+    values = dict(temperature=pi_temp,
+                  token='')
+    data = urllib.parse.urlencode(values).encode('utf-8')
+    req = urllib.request.Request('http://207.154.239.115/api/temperature', data=data)
+    response = urllib.request.urlopen(req)
+    res = str(response.read())
+    with open("log.txt", "w") as text_file:
+        text_file.write(res)
 finally:
-    if con:
-        con.close()
+    sys.exit(1)
