@@ -248,11 +248,11 @@ def get_smhi(interval):
     return date, temp
 
 
-# Function that connects to the MySQL database and given the inputted arguments returns the correct graph.
+# Function that connects to the database and given the inputted arguments returns the correct graph.
 # If the arguments are empty strings, it means that we want to show the temperature of the last 24 hours.
 def plot(start_show, end_show, interval):
     try:
-        conn = http.client.HTTPConnection("207.154.239.115")
+        conn = http.client.HTTPConnection("")
         payload = "temperature=23&token="
         headers = {
             'content-type': "application/x-www-form-urlencoded",

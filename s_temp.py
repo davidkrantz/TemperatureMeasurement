@@ -3,6 +3,8 @@ import glob
 import time
 import sys
 import urllib.parse
+import urllib.request
+
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -20,7 +22,7 @@ def read_temp_raw():
     return lines
 
 
-# Convert the temperature to degrees Celsius
+# Read, convert and return the temperature in degrees Celsius
 def read_temp():
     lines = read_temp_raw()
     while lines[0].strip()[-3:] != 'YES':
@@ -33,18 +35,19 @@ def read_temp():
         return temp_c
 
 
-time.sleep(57)
+time.sleep(56)
 
-# Save the temperature to the MySQL database
+
+# Save the temperature to the database
 try:
     pi_temp = str(read_temp())
     values = dict(temperature=pi_temp,
-                  token='')
+                  token="")
     data = urllib.parse.urlencode(values).encode('utf-8')
-    req = urllib.request.Request('http://207.154.239.115/api/temperature', data=data)
+    req = urllib.request.Request('', data=data)
     response = urllib.request.urlopen(req)
     res = str(response.read())
-    with open("log.txt", "w") as text_file:
+    with open("log.txt", "a") as text_file:
         text_file.write(res)
 finally:
     sys.exit(1)

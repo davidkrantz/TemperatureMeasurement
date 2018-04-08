@@ -5,10 +5,11 @@ from datetime import datetime
 import http.client
 
 
+# Gets the indoor temperature training data from the database.
 def get_train_data():
     training_data = []
     try:
-        conn = http.client.HTTPConnection("207.154.239.115")
+        conn = http.client.HTTPConnection("")
 
         payload = "temperature=23&token="
 
@@ -36,6 +37,7 @@ def get_train_data():
     return training_data, last_timestamp
 
 
+# Help method to get the outdoor temperature training data from SMHI.
 def get_smhi_data():
     url = 'http://opendata-download-metobs.smhi.se/api/version/latest/parameter/1/station/52350/period/latest-months/data.json'
     smhi_data = []
@@ -53,6 +55,7 @@ def get_smhi_data():
     return smhi_data
 
 
+# Main function to collect and return both the outdoor and indoor temperature training data.
 def get_all_data():
     train_data, last_timestamp = get_train_data()
     train_smhi = get_smhi_data()
@@ -71,6 +74,7 @@ def get_all_data():
     return data, last_timestamp
 
 
+# Chunks the data in to the correct shape.
 def chunk(l, n):
     for j in range(0, len(l), n):
         yield l[j:j + n]
